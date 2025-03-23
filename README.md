@@ -1,26 +1,17 @@
-# Veritas - Decentralized IP Registry & Verification System
+# Veritas - Content Verification System
 
-Veritas is a decentralized intellectual property registry and verification system that leverages Hedera Hashgraph for immutable record-keeping and AI-powered similarity detection to ensure content originality.
+Veritas is a content verification and registration system that uses Hedera blockchain technology to verify the originality and authenticity of digital content.
 
-## Project Overview
+## Overview
 
-Veritas provides a solution for content creators to establish proof of authorship and verify content originality through a combination of blockchain technology and AI-powered analysis. The system allows users to:
+Veritas allows users to register and verify digital content using blockchain technology. The system registers the content by creating a unique hash, storing it on the Hedera distributed ledger, and generating embeddings for future similarity comparison. When verifying content, Veritas compares it against previously registered content to determine originality.
 
-- Register and timestamp content on Hedera's distributed ledger
-- Generate unique content fingerprints and embeddings
-- Detect similarity with previously registered content
-- Establish verifiable proof of authorship with legal standing
+## Features
 
-## Problem Solved
-
-Content creators face significant challenges in the digital age:
-
-- Proving original authorship of digital content
-- Detecting plagiarism and unauthorized content reuse
-- Establishing timestamps for intellectual property claims
-- Navigating expensive and slow traditional copyright processes
-
-Veritas addresses these challenges by providing an efficient, cost-effective solution that combines the immutability of blockchain with the intelligence of AI-powered similarity detection.
+- **Content Registration**: Register digital content on the Hedera blockchain with associated metadata
+- **Content Verification**: Check content originality against previously registered content
+- **Similarity Detection**: Find similar content using embedding-based similarity matching
+- **Blockchain-backed**: All registrations are secured by Hedera's distributed ledger technology
 
 ## Technical Architecture
 
@@ -124,7 +115,7 @@ docker-compose up -d
 
 ## API Documentation
 
-### Registration Endpoint
+### Register Content
 
 **POST /api/register**
 
@@ -151,7 +142,7 @@ Response:
 }
 ```
 
-### Verification Endpoint
+### Verify Content
 
 **POST /api/verify**
 
