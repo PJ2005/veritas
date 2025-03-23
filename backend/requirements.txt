@@ -1,0 +1,13 @@
+web3
+fastapi
+uvicorn
+sentence-transformers
+redis
+pytest
+docker
+hedera-sdk-py>=2.50.0
+pydantic
+python-dotenv
+httpx
+prometheus-client
+psutil
