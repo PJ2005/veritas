@@ -1,7 +1,11 @@
 web3
-'fastapi[standard]'
+fastapi
 uvicorn
 sentence-transformers
 redis
 pytest
 docker
+hedera-sdk-py
+pydantic
+python-dotenv
+httpx
