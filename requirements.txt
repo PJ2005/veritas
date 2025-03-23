@@ -9,3 +9,5 @@ hedera-sdk-py>=2.50.0
 pydantic
 python-dotenv
 httpx
+prometheus-client
+psutil

@@ -4,6 +4,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from .api.routes import router
+from prometheus_client import make_asgi_app
+from .metrics import PrometheusMiddleware
+import psutil
 
 # Configure logging
 logging.basicConfig(
@@ -26,7 +29,7 @@ app = FastAPI(
     title="Veritas IP Registry",
     description="Decentralized intellectual property registry using Hedera and AI",
     version="0.1.0",
-    lifespan=lifespan
+    lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_tags=[{"name": "content", "description": "Content operations"}]
@@ -40,6 +43,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add Prometheus middleware
+app.add_middleware(PrometheusMiddleware, app_name="veritas_api")
+
+# Create metrics endpoint for Prometheus
+metrics_app = make_asgi_app()
+app.mount("/api/metrics", metrics_app)
 
 # Include API routes
 app.include_router(router, prefix="/api")

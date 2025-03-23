@@ -1,7 +1,8 @@
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Depends
 from ..models.schemas import (
     RegistrationRequest, RegistrationResponse, 
-    VerificationRequest, VerificationResponse, SimilarityMatch
+    VerificationRequest, VerificationResponse, SimilarityMatch,
+    HealthResponse
 )
 from ..services.hedera_service import HederaService
 from ..services.redis_service import RedisService
@@ -9,6 +10,8 @@ from ..services.verification_service import VerificationService
 from ..utils.helpers import generate_content_hash, serialize_for_hedera, get_current_timestamp
 from typing import Dict, List
 from datetime import datetime
+import psutil
+import platform
 
 router = APIRouter()
 
@@ -127,7 +130,32 @@ async def verify_content(request: VerificationRequest):
         raise HTTPException(status_code=500, detail=f"Verification failed: {str(e)}")
 
 
-@router.get("/health")
+@router.get("/health", response_model=HealthResponse)
 async def health_check():
-    """API health check endpoint"""
-    return {"status": "ok", "timestamp": get_current_timestamp()}
+    """Enhanced API health check endpoint with system metrics"""
+    try:
+        # Test Redis connection
+        redis_status = "ok" if redis_service.client.ping() else "error"
+    except Exception:
+        redis_status = "error"
+
+    # Get system metrics
+    memory = psutil.virtual_memory()
+    disk = psutil.disk_usage('/')
+    
+    return HealthResponse(
+        status="ok",
+        timestamp=get_current_timestamp(),
+        version="0.1.0",
+        services={
+            "redis": redis_status,
+            "hedera": "ok"  # We assume Hedera is ok if the service is running
+        },
+        system={
+            "cpu_percent": psutil.cpu_percent(interval=0.1),
+            "memory_percent": memory.percent,
+            "disk_percent": disk.percent,
+            "platform": platform.platform(),
+            "python_version": platform.python_version()
+        }
+    )
