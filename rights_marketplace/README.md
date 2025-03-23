@@ -1,1 +1,0 @@
-# Rights_marketplace Module
