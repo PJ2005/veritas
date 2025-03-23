@@ -1,0 +1,7 @@
+web3
+'fastapi[standard]'
+uvicorn
+sentence-transformers
+redis
+pytest
+docker
