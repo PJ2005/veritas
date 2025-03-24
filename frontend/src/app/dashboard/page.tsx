@@ -82,7 +82,7 @@ export default function DashboardPage() {
     const intervalId = setInterval(fetchHealthData, 5000)
 
     return () => clearInterval(intervalId)
-  }, [])
+  }, [fetchHealthData])
 
   if (loading) {
     return (

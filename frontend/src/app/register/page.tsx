@@ -21,12 +21,18 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8
 const API_CREATE_TOPIC_ENDPOINT = '/api/create-topic';
 const API_REGISTER_ENDPOINT = '/api/register';
 
+interface MetadataType {
+  category: string;
+  keywords: string[];
+  [key: string]: string | string[];
+}
+
 interface RegistrationRequest {
   content: string
   content_type: "text" | "image" | "code" | "document"
   title?: string
   author?: string
-  metadata?: Record<string, any>
+  metadata?: MetadataType
   topic_id: string
 }
 
@@ -40,7 +46,6 @@ interface RegistrationResponse {
 export default function RegisterPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
-  const [topicId, setTopicId] = useState("")
   const [topicLoading, setTopicLoading] = useState(false)
   const [formData, setFormData] = useState<RegistrationRequest>({
     content: "",
@@ -69,7 +74,7 @@ export default function RegisterPage() {
         }
 
         const data = await response.json()
-        setTopicId(data.topic_id)
+        // setTopicId function doesn't exist, replace with direct state update
         setFormData(prev => ({ ...prev, topic_id: data.topic_id }))
       } catch (err) {
         console.error("Failed to create topic:", err)
@@ -123,7 +128,7 @@ export default function RegisterPage() {
   }
 
   const handleSelectChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, content_type: value as any }))
+    setFormData((prev) => ({ ...prev, content_type: value as "text" | "image" | "code" | "document" }))
   }
 
   const handleMetadataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,12 +138,12 @@ export default function RegisterPage() {
       const keywords = value.split(",").map((k) => k.trim())
       setFormData((prev) => ({
         ...prev,
-        metadata: { ...prev.metadata, keywords },
+        metadata: { ...prev.metadata!, keywords },
       }))
     } else {
       setFormData((prev) => ({
         ...prev,
-        metadata: { ...prev.metadata, [name]: value },
+        metadata: { ...prev.metadata!, [name]: value },
       }))
     }
   }

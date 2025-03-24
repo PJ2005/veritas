@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { Shield } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
 
 export function Navbar() {

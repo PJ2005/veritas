@@ -93,7 +93,7 @@ export default function VerifyPage() {
   }
 
   const handleSelectChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, content_type: value as any }))
+    setFormData((prev) => ({ ...prev, content_type: value as "text" | "image" | "code" | "document" }))
   }
 
   const handleSliderChange = (value: number[]) => {

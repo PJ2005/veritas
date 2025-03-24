@@ -8,8 +8,8 @@ interface ApiEndpointProps {
   description: string
   requestBody: Record<string, string> | null
   responseBody: Record<string, string>
-  sampleRequest: Record<string, any> | null
-  sampleResponse: Record<string, any>
+  sampleRequest: Record<string, unknown> | null
+  sampleResponse: Record<string, unknown>
 }
 
 export function ApiEndpoint({
@@ -37,8 +37,7 @@ export function ApiEndpoint({
             </Badge>
             <Badge
               className={`
-              ${
-                method === "GET"
+              ${method === "GET"
                   ? "bg-green-500 hover:bg-green-600"
                   : method === "POST"
                     ? "bg-blue-500 hover:bg-blue-600"
@@ -47,7 +46,7 @@ export function ApiEndpoint({
                       : method === "DELETE"
                         ? "bg-red-500 hover:bg-red-600"
                         : ""
-              }
+                }
             `}
             >
               {method}
