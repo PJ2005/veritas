@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -14,12 +14,20 @@ import { toast } from "sonner"
 import { RegistrationSuccess } from "@/components/registration-success"
 import { Loader2 } from "lucide-react"
 
+// API base URL from environment variable or default to localhost:8000
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+
+// You might need to adjust these paths based on your actual API structure
+const API_CREATE_TOPIC_ENDPOINT = '/api/create-topic';
+const API_REGISTER_ENDPOINT = '/api/register';
+
 interface RegistrationRequest {
   content: string
   content_type: "text" | "image" | "code" | "document"
   title?: string
   author?: string
   metadata?: Record<string, any>
+  topic_id: string
 }
 
 interface RegistrationResponse {
@@ -32,38 +40,70 @@ interface RegistrationResponse {
 export default function RegisterPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [topicId, setTopicId] = useState("")
+  const [topicLoading, setTopicLoading] = useState(false)
   const [formData, setFormData] = useState<RegistrationRequest>({
     content: "",
     content_type: "text",
     title: "",
     author: "",
     metadata: { category: "", keywords: [] },
+    topic_id: ""
   })
   const [response, setResponse] = useState<RegistrationResponse | null>(null)
+
+  // Get a default topic ID when the component mounts
+  useEffect(() => {
+    const getTopicId = async () => {
+      try {
+        setTopicLoading(true)
+        const apiUrl = `${API_BASE_URL}${API_CREATE_TOPIC_ENDPOINT}`;
+        console.log('Creating topic at:', apiUrl);
+
+        const response = await fetch(apiUrl, {
+          method: 'POST'
+        })
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`)
+        }
+
+        const data = await response.json()
+        setTopicId(data.topic_id)
+        setFormData(prev => ({ ...prev, topic_id: data.topic_id }))
+      } catch (err) {
+        console.error("Failed to create topic:", err)
+        toast.error("Failed to initialize topic", {
+          description: "You'll need to provide your own topic ID."
+        })
+      } finally {
+        setTopicLoading(false)
+      }
+    }
+
+    getTopicId()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      // In a real app, this would be an actual API call
-      // const response = await fetch('http://localhost:8000/api/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // })
-      // const data = await response.json()
+      const apiUrl = `${API_BASE_URL}${API_REGISTER_ENDPOINT}`;
+      console.log('Registering content at:', apiUrl);
 
-      // Simulate API response
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      const mockResponse: RegistrationResponse = {
-        content_id: "8a7b64c5f3e2d1a0b9c8d7e6f5a4b3c2d1e0f",
-        timestamp: new Date().toISOString(),
-        transaction_id: "0.0.5763624@1742732976.123456789",
-        content_hash: "8a7b64c5f3e2d1a0b9c8d7e6f5a4b3c2d1e0f",
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`)
       }
 
-      setResponse(mockResponse)
+      const data = await response.json()
+      setResponse(data)
       toast.success("Content Registered Successfully", {
         description: "Your content has been registered on the blockchain.",
       })
@@ -71,6 +111,7 @@ export default function RegisterPage() {
       toast.error("Registration Failed", {
         description: "There was an error registering your content. Please try again.",
       })
+      console.error("Registration error:", error)
     } finally {
       setIsLoading(false)
     }
@@ -154,6 +195,25 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="topic_id">Topic ID</Label>
+                <Input
+                  id="topic_id"
+                  name="topic_id"
+                  placeholder="Enter Hedera Topic ID"
+                  value={formData.topic_id}
+                  onChange={handleInputChange}
+                  required
+                  disabled={topicLoading}
+                />
+                {topicLoading && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Creating default topic...
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="content">Content</Label>
                 <Textarea
                   id="content"
@@ -196,7 +256,7 @@ export default function RegisterPage() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className=" pt-5">
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>

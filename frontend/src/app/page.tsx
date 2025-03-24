@@ -19,13 +19,13 @@ export default function Home() {
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/register">
-                  <Button className="bg-primary hover:bg-primary/90">
+                  <Button className="bg-primary hover:bg-primary/90 cursor-pointer" size={"lg"}>
                     Register Content
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/verify">
-                  <Button variant="outline">
+                  <Button variant={"outline"} className=" cursor-pointer" size={"lg"}>
                     Verify Content
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>

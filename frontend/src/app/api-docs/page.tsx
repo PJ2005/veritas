@@ -15,6 +15,7 @@ export default function ApiDocsPage() {
             <TabsTrigger value="register">Register</TabsTrigger>
             <TabsTrigger value="verify">Verify</TabsTrigger>
             <TabsTrigger value="health">Health</TabsTrigger>
+            <TabsTrigger value="topic">Create Topic</TabsTrigger>
           </TabsList>
 
           <TabsContent value="register" className="space-y-4">
@@ -28,6 +29,7 @@ export default function ApiDocsPage() {
                 title: "string (optional)",
                 author: "string (optional)",
                 metadata: "Record<string, any> (optional)",
+                topic_id: "string",
               }}
               responseBody={{
                 content_id: "string",
@@ -40,6 +42,7 @@ export default function ApiDocsPage() {
                 content_type: "text",
                 title: "Sample Research Paper",
                 author: "John Doe",
+                topic_id: "0.0.1234567",
                 metadata: {
                   category: "research",
                   keywords: ["blockchain", "verification"],
@@ -130,6 +133,22 @@ export default function ApiDocsPage() {
                   platform: "Linux-5.15.0-x86_64-with-glibc2.31",
                   python_version: "3.9.21",
                 },
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="topic" className="space-y-4">
+            <ApiEndpoint
+              title="Create Hedera Topic"
+              endpoint="POST /api/create-topic"
+              description="Create a new Hedera topic for content registration."
+              requestBody={null}
+              responseBody={{
+                topic_id: "string",
+              }}
+              sampleRequest={null}
+              sampleResponse={{
+                topic_id: "0.0.1234567",
               }}
             />
           </TabsContent>

@@ -13,6 +13,12 @@ import { toast } from "sonner"
 import { VerificationResults } from "@/components/verification-results"
 import { Loader2 } from "lucide-react"
 
+// API base URL from environment variable or default to localhost:8000
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+
+// You might need to adjust this path based on your actual API structure
+const API_VERIFY_ENDPOINT = '/api/verify';
+
 interface VerificationRequest {
   content: string
   content_type: "text" | "image" | "code" | "document"
@@ -48,53 +54,33 @@ export default function VerifyPage() {
     setIsLoading(true)
 
     try {
-      // In a real app, this would be an actual API call
-      // const response = await fetch('http://localhost:8000/api/verify', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // })
-      // const data = await response.json()
+      const apiUrl = `${API_BASE_URL}${API_VERIFY_ENDPOINT}`;
+      console.log('Verifying content at:', apiUrl);
 
-      // Simulate API response
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
 
-      // Mock response with some random data
-      const mockResponse: VerificationResponse = {
-        content_hash: "7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8",
-        is_original: false,
-        similarity_threshold: formData.threshold,
-        matches: [
-          {
-            content_id: "8a7b64c5f3e2d1a0b9c8d7e6f5a4b3c2d1e0f",
-            similarity_score: 0.92,
-            timestamp: "2025-03-23T12:34:56",
-            title: "Sample Research Paper",
-            author: "John Doe",
-          },
-          {
-            content_id: "5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7",
-            similarity_score: 0.87,
-            timestamp: "2025-03-22T10:20:30",
-            title: "Original Research",
-            author: "Jane Smith",
-          },
-        ],
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`)
       }
 
-        setResults(mockResponse)
-        toast.success(
-          mockResponse.is_original
-            ? "No similar content was found."
-            : `Found ${mockResponse.matches.length} similar content matches.`,
-          {
-            description: "Verification Complete",
-          }
-        )
-      } catch (error) {
-        toast.error("Verification Failed", {
-          description: "There was an error verifying your content. Please try again."
-        })
+      const data = await response.json()
+      setResults(data)
+      toast.success(
+        data.is_original
+          ? "No similar content was found."
+          : `Found ${data.matches.length} similar content matches.`,
+        {
+          description: "Verification Complete",
+        }
+      )
+    } catch (error) {
+      toast.error("Verification Failed", {
+        description: "There was an error verifying your content. Please try again."
+      })
       console.error("Verification error:", error)
     } finally {
       setIsLoading(false)
@@ -184,7 +170,7 @@ export default function VerifyPage() {
                 </p>
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className=" pt-5">
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>
