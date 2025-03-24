@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
@@ -39,7 +39,7 @@ export default function DashboardPage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [dataStale, setDataStale] = useState(false)
 
-  const fetchHealthData = async () => {
+  const fetchHealthData = useCallback(async () => {
     try {
       if (!loading) setRefreshing(true);
 
@@ -73,7 +73,7 @@ export default function DashboardPage() {
       setLoading(false)
       setRefreshing(false)
     }
-  }
+  }, [loading, healthData])
 
   useEffect(() => {
     fetchHealthData()

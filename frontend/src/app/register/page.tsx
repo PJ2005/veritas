@@ -44,7 +44,7 @@ interface RegistrationResponse {
 }
 
 export default function RegisterPage() {
-  const router = useRouter()
+  // const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [topicLoading, setTopicLoading] = useState(false)
   const [formData, setFormData] = useState<RegistrationRequest>({
