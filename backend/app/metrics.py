@@ -1,3 +1,4 @@
+from starlette.middleware.base import BaseHTTPMiddleware
 from prometheus_client import Counter, Histogram, Gauge
 import time
 
@@ -20,15 +21,15 @@ ACTIVE_REQUESTS = Gauge(
     ['app_name']
 )
 
-# Define a middleware to track request metrics
-class PrometheusMiddleware:
-    def __init__(self, app_name):
+class PrometheusMiddleware(BaseHTTPMiddleware):  # Extend BaseHTTPMiddleware
+    def __init__(self, app, app_name="fastapi"):
+        super().__init__(app)
         self.app_name = app_name
-    
-    async def __call__(self, request, call_next):
+
+    async def dispatch(self, request, call_next):
         ACTIVE_REQUESTS.labels(self.app_name).inc()
         start_time = time.time()
-        
+
         try:
             response = await call_next(request)
             REQUEST_COUNT.labels(
@@ -37,7 +38,6 @@ class PrometheusMiddleware:
                 request.url.path,
                 response.status_code
             ).inc()
-            
             return response
         except Exception as e:
             REQUEST_COUNT.labels(

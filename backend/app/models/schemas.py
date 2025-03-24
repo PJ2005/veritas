@@ -17,6 +17,8 @@ class RegistrationRequest(BaseModel):
     title: Optional[str] = Field(None, description="Title of the content")
     author: Optional[str] = Field(None, description="Author name")
     metadata: Optional[Dict] = Field(default={}, description="Additional metadata")
+    topic_id: str = Field(..., description="Hedera Topic ID for content registration")
+
 
 
 class RegistrationResponse(BaseModel):

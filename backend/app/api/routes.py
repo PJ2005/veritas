@@ -12,6 +12,7 @@ from typing import Dict, List
 from datetime import datetime
 import psutil
 import platform
+from datetime import timezone
 
 router = APIRouter()
 
@@ -55,6 +56,10 @@ def process_content_registration(content_hash: str, transaction_id: str,
 async def register_content(request: RegistrationRequest, background_tasks: BackgroundTasks):
     """Register content on Hedera and store metadata"""
     try:
+        # Validate topic_id
+        if not request.topic_id:
+            raise HTTPException(status_code=400, detail="topic_id is required for registration")
+
         # Generate content hash
         content_hash = generate_content_hash(request.content)
         
@@ -67,10 +72,14 @@ async def register_content(request: RegistrationRequest, background_tasks: Backg
         hedera_data = serialize_for_hedera(content_hash, metadata)
         
         # Submit to Hedera
-        transaction_id, consensus_timestamp = hedera_service.register_content(hedera_data)
+        transaction_id, consensus_timestamp = hedera_service.register_content(hedera_data, request.topic_id)
         
-        # Parse timestamp
-        timestamp = datetime.fromisoformat(consensus_timestamp.replace('Z', '+00:00'))
+        # Parse timestamp from seconds.nanoseconds format
+        
+        timestamp_parts = consensus_timestamp.rstrip('Z').split('.')
+        seconds = int(timestamp_parts[0])
+        nanos = int(timestamp_parts[1]) if len(timestamp_parts) > 1 else 0
+        timestamp = datetime.fromtimestamp(seconds + nanos/1_000_000_000, tz=timezone.utc)
         
         # Schedule background processing
         background_tasks.add_task(
@@ -88,9 +97,10 @@ async def register_content(request: RegistrationRequest, background_tasks: Backg
             content_hash=content_hash
         )
         
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
-
 
 @router.post("/verify", response_model=VerificationResponse)
 async def verify_content(request: VerificationRequest):
@@ -159,3 +169,12 @@ async def health_check():
             "python_version": platform.python_version()
         }
     )
+
+@router.post("/create-topic")
+async def create_topic():
+    """Create a new topic on Hedera and return its ID"""
+    try:
+        topic_id = hedera_service.create_content_topic()
+        return {"topic_id": topic_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Topic creation failed: {str(e)}")

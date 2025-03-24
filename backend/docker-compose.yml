@@ -14,7 +14,7 @@ services:
       - JVM_PATH=/usr/lib/jvm/java-17-openjdk-amd64/lib/server/libjvm.so
 
   redis:
-    image: redis:6.2-alpine
+    image: redis:7.4.2-alpine
     ports:
       - "6379:6379"
     volumes:
