@@ -12,9 +12,6 @@ Veritas allows users to register and verify digital content using blockchain tec
 - **Content Verification**: Check content originality against previously registered content
 - **Similarity Detection**: Find similar content using embedding-based similarity matching
 - **Blockchain-backed**: All registrations are secured by Hedera's distributed ledger technology
-- **Monitoring**: Built-in Prometheus metrics and Grafana dashboards for system monitoring
-- **CI/CD Pipeline**: Automated testing and deployment using GitHub Actions
-- **Multi-environment Support**: Deployment configurations for development, staging and production
 
 ## Technical Architecture
 
@@ -25,8 +22,6 @@ The system is built on a modern tech stack:
 - **AI/ML**: Sentence Transformers for semantic content analysis
 - **Data Storage**: Redis for embedding and metadata storage
 - **Deployment**: Docker containerized application
-- **Monitoring**: Prometheus and Grafana for metrics and visualization
-- **CI/CD**: GitHub Actions for continuous integration and deployment
 
 ### System Components
 
