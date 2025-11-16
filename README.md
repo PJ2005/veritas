@@ -148,5 +148,3 @@ docker-compose up -d
 * Understood the advantages of using **Redis** for fast metadata and embedding lookups, particularly in verification workflows.
 * Learned how to use **Hedera Hashgraph** for secure and immutable content registration, including managing credentials and submitting transactions.
 * Explored lightweight **ML models** using Sentence Transformers to support semantic similarity checking, optimized for deployment on resource-constrained systems.
-* Gained hands-on experience setting up a **CI/CD pipeline** using GitHub Actions for automated testing and deployment.
-* Understood the value of **observability** by integrating Prometheus and Grafana to monitor system health and performance metrics.
